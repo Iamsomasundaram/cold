@@ -1,0 +1,10 @@
+{
+  "name": "coldstore-root",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "contracts:install": "npm --prefix contracts install",
+    "contracts:validate": "npm --prefix contracts run validate",
+    "test": "npm --prefix contracts run validate"
+  }
+}

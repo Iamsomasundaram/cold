@@ -1,0 +1,30 @@
+{
+  "tenantKey": "potato_wh",
+  "eventId": "evt-0001",
+  "readingId": 12345,
+  "violationId": 6789,
+  "sensorCode": "PW-CH1-TEMP-01",
+  "metric": "temperature",
+  "value": 12.8,
+  "unit": "C",
+  "observedAt": 1767693600000,
+  "detectedAt": 1767693601000,
+  "hasViolation": true,
+  "severity": "WARN",
+  "violationType": "ABOVE_MAX",
+  "expectedMin": 2,
+  "expectedMax": 8,
+  "location": {
+    "siteName": "Chamber 1",
+    "zone": "Zone A",
+    "rack": "R1"
+  },
+  "ruleVersion": "v2",
+  "scenario": "LP2",
+  "dataProfile": "DP2",
+  "correlationId": "run-001",
+  "traceId": "trace-abc",
+  "tags": {
+    "run_label": "smoke_lp2_dp2"
+  }
+}

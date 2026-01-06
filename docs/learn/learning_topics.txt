@@ -1,0 +1,22 @@
+MySQL
+Topics:
+1. Table IO vs File IO
+Links:
+https://www.youtube.com/playlist?list=PLSE8ODhjZXjbj8BMuIrRcacnQh20hmY9g
+
+
+API
+Links:
+https://github.com/elc-shopify-ecosystem/maze-autodash/blob/main/docs/API.md
+
+
+
+Next step (only if you want): we can add an optional BATCH_SIZE behavior that uses http.batch() to simulate ingestion batching without changing your ingest API contract.
+
+
+SLACK_WEBHOOK_URL=<set-in-env>
+
+curl -X POST -H 'Content-type: application/json' --data '{"text":"Hello, World!"}' $SLACK_WEBHOOK_URL
+
+
+OPENAI_API_KEY=<set-in-env>

@@ -1,0 +1,45 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+Desktop.ini
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Node / JS
+node_modules/
+dist/
+build/
+coverage/
+.nyc_output/
+.cache/
+.npm/
+.pnpm-store/
+.yarn/
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Logs / local data
+logs/
+*.log
+ingest-api/pgadmin-data/
+mongo-data/
+**/observability/**/data/
+
+# Env files
+.env
+.env.*
+!.env.example
+!.env.sample
+!.env.template
+
+hardening/

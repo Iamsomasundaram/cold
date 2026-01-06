@@ -1,0 +1,9 @@
+All Kafka script are in /opt/kafka/bin folder
+ docker exec -it kafka sh
+ cd /opt/kafka/bin
+ sh kafka-topics.sh \
+  --describe \
+  --topic events.detected.v1 \
+  --bootstrap-server localhost:9092
+
+docker logs -f detector-service | grep "Sending to DLQ"

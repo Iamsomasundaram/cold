@@ -1,0 +1,32 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: coldstore
+      POSTGRES_USER: coldstore
+      POSTGRES_PASSWORD: coldstore
+    ports:
+      - "5432:5432"
+    volumes:
+      # Runs once on first container start and creates schema + seed data
+      - ./db/schema_v2.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./db/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql
+
+  # schema-registry:
+  #   image: confluentinc/cp-schema-registry:7.6.0
+  #   container_name: schema-registry
+  #   restart: unless-stopped
+  #   environment:
+  #     # Point this to your existing Kafka bootstrap servers
+  #     SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "PLAINTEXT://kafka:9092"
+  #     SCHEMA_REGISTRY_HOST_NAME: "schema-registry"
+  #     SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:8081"
+  #   ports:
+  #     - "8081:8081"
+  #   depends_on:
+  #     - postgres
+  #     # and your existing kafka service in the MAIN compose file (not shown here)

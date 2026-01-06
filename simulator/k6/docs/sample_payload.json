@@ -1,0 +1,114 @@
+{
+  "dry_run_incident_phase_payloads": [
+    {
+      "phase": "DoorOpen",
+      "payload": {
+        "tenant_key": "potato_wh",
+        "event_id": "potato_wh:PW-CH1-DOOR-01:door_open_seconds:1767352181352:725281",
+        "sensor_code": "PW-CH1-DOOR-01",
+        "metric": "door_open_seconds",
+        "value": 131.10069466472385,
+        "unit": "s",
+        "observed_at": "2026-01-02T11:09:41.352Z",
+        "scenario": "steady",
+        "data_profile": "DP3",
+        "correlation_id": "inc-cs-1767352180352",
+        "tags": {
+          "run_label": "potato_baseline_lp1_dp3_dryrun",
+          "tenant_mode": "single",
+          "load_profile": "LP1",
+          "data_profile": "DP3",
+          "phase": "DoorOpen"
+        }
+      }
+    },
+    {
+      "phase": "LightsOn",
+      "payload": {
+        "tenant_key": "potato_wh",
+        "event_id": "potato_wh:PW-CH1-LUX-01:lux:1767352301352:668191",
+        "sensor_code": "PW-CH1-LUX-01",
+        "metric": "lux",
+        "value": 625.6420635532077,
+        "unit": "lux",
+        "observed_at": "2026-01-02T11:11:41.352Z",
+        "scenario": "steady",
+        "data_profile": "DP3",
+        "correlation_id": "inc-cs-1767352180352",
+        "tags": {
+          "run_label": "potato_baseline_lp1_dp3_dryrun",
+          "tenant_mode": "single",
+          "load_profile": "LP1",
+          "data_profile": "DP3",
+          "phase": "LightsOn"
+        }
+      }
+    },
+    {
+      "phase": "TempRising",
+      "payload": {
+        "tenant_key": "potato_wh",
+        "event_id": "potato_wh:PW-CH1-TEMP-01:temperature:1767352421352:811892",
+        "sensor_code": "PW-CH1-TEMP-01",
+        "metric": "temperature",
+        "value": 5.493062439629622,
+        "unit": "C",
+        "observed_at": "2026-01-02T11:13:41.352Z",
+        "scenario": "steady",
+        "data_profile": "DP3",
+        "correlation_id": "inc-cs-1767352180352",
+        "tags": {
+          "run_label": "potato_baseline_lp1_dp3_dryrun",
+          "tenant_mode": "single",
+          "load_profile": "LP1",
+          "data_profile": "DP3",
+          "phase": "TempRising"
+        }
+      }
+    },
+    {
+      "phase": "CO2Rising",
+      "payload": {
+        "tenant_key": "potato_wh",
+        "event_id": "potato_wh:PW-CH1-CO2-01:co2_ppm:1767352781352:857406",
+        "sensor_code": "PW-CH1-CO2-01",
+        "metric": "co2_ppm",
+        "value": 4135.103286775333,
+        "unit": "ppm",
+        "observed_at": "2026-01-02T11:19:41.352Z",
+        "scenario": "steady",
+        "data_profile": "DP3",
+        "correlation_id": "inc-cs-1767352180352",
+        "tags": {
+          "run_label": "potato_baseline_lp1_dp3_dryrun",
+          "tenant_mode": "single",
+          "load_profile": "LP1",
+          "data_profile": "DP3",
+          "phase": "CO2Rising"
+        }
+      }
+    },
+    {
+      "phase": "PowerUp",
+      "payload": {
+        "tenant_key": "potato_wh",
+        "event_id": "potato_wh:PW-FAC-EM-01:power_kw:1767353021352:503364",
+        "sensor_code": "PW-FAC-EM-01",
+        "metric": "power_kw",
+        "value": 131.8228155056411,
+        "unit": "kW",
+        "observed_at": "2026-01-02T11:23:41.352Z",
+        "scenario": "steady",
+        "data_profile": "DP3",
+        "correlation_id": "inc-cs-1767352180352",
+        "tags": {
+          "run_label": "potato_baseline_lp1_dp3_dryrun",
+          "tenant_mode": "single",
+          "load_profile": "LP1",
+          "data_profile": "DP3",
+          "phase": "PowerUp"
+        }
+      }
+    }
+  ]
+}

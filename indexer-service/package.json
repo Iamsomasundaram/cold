@@ -1,0 +1,21 @@
+{
+  "name": "indexer-service",
+  "version": "1.0.0",
+  "description": "Kafka → Elasticsearch indexer for detected coldstore events",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "NODE_ENV=development node src/index.js"
+  },
+  "dependencies": {
+    "@elastic/elasticsearch": "^8.15.0",
+    "@kafkajs/confluent-schema-registry": "^3.3.0",
+    "express": "^4.19.2",
+    "kafkajs": "^2.2.4",
+    "pino": "^9.3.0",
+    "prom-client": "^15.0.0"
+  },
+  "devDependencies": {
+    "pino-pretty": "^13.1.3"
+  }
+}

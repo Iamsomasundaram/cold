@@ -1,0 +1,11 @@
+To start the stack:
+From observability/:
+docker compose -f docker-compose.observability.yml up -d
+docker ps
+
+Prometheus UI: http://localhost:9090
+
+Grafana UI: http://localhost:3000
+ (admin/admin)
+
+Loki HTTP API: http://localhost:3100

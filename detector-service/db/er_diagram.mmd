@@ -1,0 +1,132 @@
+erDiagram
+  TENANT {
+    UUID tenant_id PK
+    TEXT tenant_key "unique"
+    TEXT name
+    TEXT status
+    JSONB metadata
+    TIMESTAMPTZ created_at
+    TIMESTAMPTZ updated_at
+  }
+
+  LOCATION {
+    BIGINT id PK
+    UUID tenant_id FK
+    TEXT location_type
+    TEXT name
+    BIGINT parent_location_id FK "self (same tenant)"
+    TEXT site_name
+    TEXT zone
+    TEXT rack
+    JSONB metadata
+    TIMESTAMPTZ created_at
+    TIMESTAMPTZ updated_at
+  }
+
+  SENSOR {
+    BIGINT id PK
+    UUID tenant_id FK
+    TEXT sensor_code "unique per tenant"
+    TEXT sensor_type
+    BIGINT location_id FK
+    TEXT status
+    JSONB metadata
+    TIMESTAMPTZ created_at
+    TIMESTAMPTZ updated_at
+  }
+
+  THRESHOLD_RULE {
+    BIGINT id PK
+    UUID tenant_id FK
+    TEXT scope "TENANT|LOCATION|SENSOR_TYPE|SENSOR"
+    TEXT metric
+    DOUBLE min_value
+    DOUBLE max_value
+    DOUBLE warning_margin
+    DOUBLE critical_margin
+    TEXT rule_version
+    INT priority
+    BOOLEAN active
+    TIMESTAMPTZ effective_from
+    TIMESTAMPTZ effective_to
+    BIGINT location_id FK "when scope=LOCATION"
+    BIGINT sensor_id FK "when scope=SENSOR"
+    TEXT sensor_type "when scope=SENSOR_TYPE"
+    JSONB metadata
+    TIMESTAMPTZ created_at
+    TIMESTAMPTZ updated_at
+  }
+
+  SENSOR_READING {
+    BIGINT id PK
+    UUID tenant_id FK
+    TEXT event_id "unique per tenant"
+    BIGINT sensor_id FK
+    TEXT sensor_code
+    TEXT metric
+    DOUBLE value
+    TEXT unit
+    TIMESTAMPTZ observed_at
+    TIMESTAMPTZ ingested_at
+    TEXT kafka_topic
+    INT kafka_partition
+    BIGINT kafka_offset
+    TEXT correlation_id
+    TEXT trace_id
+    JSONB raw_payload
+    TIMESTAMPTZ created_at
+  }
+
+  SENSOR_VIOLATION {
+    BIGINT id PK
+    UUID tenant_id FK
+    BIGINT reading_id FK
+    BIGINT rule_id FK
+    TEXT violation_type
+    TEXT severity "INFO|WARN|CRITICAL"
+    DOUBLE expected_min
+    DOUBLE expected_max
+    DOUBLE actual_value
+    TEXT status "OPEN|ACKED|CLOSED|SUPPRESSED"
+    TIMESTAMPTZ detected_at
+    TEXT acked_by
+    TIMESTAMPTZ acked_at
+    TEXT closed_by
+    TIMESTAMPTZ closed_at
+    TEXT notes
+    TIMESTAMPTZ created_at
+  }
+
+  DEAD_LETTER_EVENT {
+    BIGINT id PK
+    UUID tenant_id FK "nullable"
+    TEXT event_id
+    TEXT source
+    TEXT error_type
+    TEXT error_message
+    TEXT kafka_topic
+    INT kafka_partition
+    BIGINT kafka_offset
+    JSONB raw_payload
+    TIMESTAMPTZ created_at
+  }
+
+  %% Relationships (all are implicitly tenant-scoped in implementation)
+  TENANT ||--o{ LOCATION : "has"
+  LOCATION ||--o{ LOCATION : "parent_of"
+
+  TENANT ||--o{ SENSOR : "has"
+  LOCATION ||--o{ SENSOR : "hosts"
+
+  TENANT ||--o{ THRESHOLD_RULE : "defines"
+  LOCATION ||--o{ THRESHOLD_RULE : "scopes (LOCATION)"
+  SENSOR ||--o{ THRESHOLD_RULE : "scopes (SENSOR)"
+
+  TENANT ||--o{ SENSOR_READING : "records"
+  SENSOR ||--o{ SENSOR_READING : "emits"
+
+  TENANT ||--o{ SENSOR_VIOLATION : "creates"
+  SENSOR_READING ||--o{ SENSOR_VIOLATION : "derives"
+  THRESHOLD_RULE ||--o{ SENSOR_VIOLATION : "triggered_by"
+
+  TENANT ||--o{ DEAD_LETTER_EVENT : "captures"

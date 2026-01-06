@@ -1,0 +1,125 @@
+{
+  "runLabel": "potato_baseline_lp1_dp3_dryrun",
+  "endpoint": {
+    "base": "http://localhost:8080",
+    "path": "/v1/ingest/events",
+    "url": "http://localhost:8080/v1/ingest/events"
+  },
+  "load_profile_id": "LP1",
+  "data_profile_id": "DP3",
+  "load_profile": {
+    "id": "LP1",
+    "name": "Steady",
+    "intent": "Constant EPS for endurance, stability, DB tuning, and long-run backpressure checks.",
+    "script_suggestion": "steady_traffic.js",
+    "duration_seconds": 1800,
+    "rate_model": {
+      "type": "CONSTANT_EPS",
+      "events_per_second": 40
+    },
+    "vu_model": {
+      "type": "AUTO",
+      "max_vus": 200
+    },
+    "http_behavior": {
+      "timeout_ms": 5000,
+      "retry": {
+        "enabled": false
+      },
+      "keepalive": true
+    },
+    "kafka_like_behavior": {
+      "batching": {
+        "enabled": true,
+        "batch_size": 1,
+        "max_batch_wait_ms": 0
+      }
+    }
+  },
+  "data_profile": "DP3",
+  "tenant_mode": "single",
+  "tenants": [
+    {
+      "tenant_key": "potato_wh",
+      "weight": 70
+    }
+  ],
+  "policies": {
+    "timestamp": {
+      "mode": "NOW",
+      "out_of_order_rate": 0,
+      "late_event_rate": 0,
+      "max_lateness_seconds": 300
+    },
+    "payload": {
+      "raw_payload_mode": "OFF",
+      "raw_payload_size": "SMALL",
+      "tags_enabled": true
+    },
+    "idempotency": {
+      "duplicate_event_rate": 0
+    }
+  },
+  "faults": {
+    "enabled": false,
+    "unknown_sensor_rate": 0,
+    "invalid_metric_rate": 0,
+    "bad_unit_rate": 0,
+    "bad_json_rate": 0,
+    "unknown_sensor_example": "UNKNOWN-999",
+    "invalid_metric_examples": ["temp_celsius", "humidity_pct", "co2"],
+    "bad_unit_examples": ["CELSIUS", "percent", "PPM", "seconds"]
+  },
+  "violations": {
+    "enabled": false,
+    "rate": 0,
+    "types": []
+  },
+  "metric_mix": [
+    {
+      "key": "TEMP",
+      "weight": 30
+    },
+    {
+      "key": "HUMIDITY",
+      "weight": 15
+    },
+    {
+      "key": "DOOR",
+      "weight": 20
+    },
+    {
+      "key": "GAS",
+      "weight": 15
+    },
+    {
+      "key": "LIGHT",
+      "weight": 10
+    },
+    {
+      "key": "ENERGY",
+      "weight": 10
+    }
+  ],
+  "resolved_k6": {
+    "effective": {
+      "model": "CONSTANT_EPS",
+      "events_per_second": 1,
+      "duration": "10s"
+    },
+    "scenarios": {
+      "main": {
+        "executor": "constant-arrival-rate",
+        "rate": 1,
+        "duration": "10s",
+        "timeUnit": "1s",
+        "preAllocatedVUs": 20,
+        "maxVUs": 200
+      }
+    }
+  },
+  "resolved_overrides": {
+    "EVENTS_PER_SECOND": "1",
+    "DURATION_SECONDS": "10"
+  }
+}

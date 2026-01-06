@@ -1,0 +1,19 @@
+{
+  "tenant_key": "potato_wh",
+  "event_id": "evt-0001",
+  "sensor_code": "PW-CH1-TEMP-01",
+  "metric": "temperature",
+  "value": 6.2,
+  "unit": "C",
+  "observed_at": "2026-01-06T10:00:00Z",
+  "scenario": "LP1",
+  "data_profile": "DP1",
+  "correlation_id": "run-001",
+  "trace_id": "trace-abc",
+  "tags": {
+    "run_label": "smoke_lp1_dp1"
+  },
+  "raw_payload": {
+    "source": "k6"
+  }
+}

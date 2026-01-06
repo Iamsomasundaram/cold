@@ -1,0 +1,22 @@
+ From powershell:
+ cd D:\Code\Projects\Projects\playground\cold\genai-service
+ py -m  pip install -r requirements.txt
+
+
+  WARNING: The script langsmith.exe is installed in 'C:\Users\css89108\AppData\Local\Programs\Python\Python312\Scripts' which is not on PATH.
+  Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location
+
+
+  curl -X POST http://localhost:4100/genai/insights `
+  -H "Content-Type: application/json" `
+  -d '{
+    "question": "Explain anomalies for potato_wh chamber-01 in the last 2 hours",
+    "tenant_key": "potato_wh",
+    "sensor_code": "PW-CH1-TEMP-01",
+    "metric": "temperature",
+    "scenario": "LP1",
+    "data_profile": "DP1",
+    "time_window": "2h"
+  }'
+
+OPENAI_API_KEY=<set-in-your-env>

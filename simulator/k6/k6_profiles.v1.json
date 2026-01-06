@@ -1,0 +1,568 @@
+{
+  "schema_version": "k6-profiles/v1",
+  "notes": "Profiles are orthogonal: LoadProfile controls rate/shape; DataProfile controls values/violations/faults. All scripts read the same format.",
+  "globals": {
+    "endpoint": {
+      "method": "POST",
+      "path": "/api/v1/events",
+      "content_type": "application/json"
+    },
+    "event_contract": {
+      "required_fields": [
+        "tenant_key",
+        "event_id",
+        "sensor_code",
+        "metric",
+        "value",
+        "unit",
+        "observed_at"
+      ],
+      "optional_fields": [
+        "scenario",
+        "data_profile",
+        "correlation_id",
+        "trace_id",
+        "tags",
+        "raw_payload"
+      ]
+    },
+    "tenants": [
+      {
+        "tenant_key": "potato_wh",
+        "weight": 70,
+        "sensor_codes": {
+          "TEMP": ["PW-CH1-TEMP-01", "PW-CH2-TEMP-01"],
+          "HUMIDITY": ["PW-CH1-HUM-01", "PW-CH2-HUM-01"],
+          "DOOR": ["PW-CH1-DOOR-01", "PW-CH2-DOOR-01"],
+          "GAS": ["PW-CH1-CO2-01", "PW-CH2-CO2-01"],
+          "LIGHT": ["PW-CH1-LUX-01", "PW-CH2-LUX-01"],
+          "ENERGY": ["PW-FAC-EM-01"]
+        }
+      },
+      {
+        "tenant_key": "healthcare_fac",
+        "weight": 30,
+        "sensor_codes": {
+          "TEMP": ["HC-ICU-TEMP-01", "HC-ICU-FRIDGE-TEMP-01"],
+          "HUMIDITY": ["HC-ICU-HUM-01"],
+          "DOOR": ["HC-ICU-DOOR-01"],
+          "GAS": ["HC-ICU-CO2-01"],
+          "LIGHT": ["HC-ICU-LUX-01"],
+          "ENERGY": ["HC-FAC-EM-01"]
+        }
+      }
+    ],
+    "metric_registry": {
+      "TEMP": { "metric": "temperature", "unit": "C" },
+      "HUMIDITY": { "metric": "humidity", "unit": "%RH" },
+      "DOOR": { "metric": "door_open_seconds", "unit": "s" },
+      "GAS": { "metric": "co2_ppm", "unit": "ppm" },
+      "LIGHT": { "metric": "lux", "unit": "lux" },
+      "ENERGY": { "metric": "power_kw", "unit": "kW" }
+    },
+    "default_metric_mix_percent": {
+      "TEMP": 28,
+      "HUMIDITY": 20,
+      "DOOR": 12,
+      "GAS": 15,
+      "LIGHT": 10,
+      "ENERGY": 15
+    },
+    "timestamp_policy": {
+      "mode": "NOW",
+      "out_of_order_rate": 0.0,
+      "late_event_rate": 0.0,
+      "max_lateness_seconds": 300
+    },
+    "payload_policy": {
+      "raw_payload_mode": "OFF",
+      "raw_payload_size": "SMALL",
+      "tags_enabled": true
+    },
+    "idempotency_policy": {
+      "duplicate_event_rate": 0.0
+    }
+  },
+  "data_profiles": [
+    {
+      "id": "DP1",
+      "name": "NormalOpsBaseline",
+      "intent": "Mostly in-range values; light noise; minimal alert noise. Good for endurance + throughput.",
+      "metric_mix_override_percent": null,
+      "value_generation": {
+        "mode": "IN_RANGE",
+        "noise_level": 0.15,
+        "ranges_by_tenant_and_sensor": {
+          "potato_wh": {
+            "PW-CH1-TEMP-01": { "min": 2.2, "max": 3.8 },
+            "PW-CH2-TEMP-01": { "min": 6.2, "max": 7.8 },
+            "PW-CH1-HUM-01": { "min": 90.5, "max": 94.5 },
+            "PW-CH2-HUM-01": { "min": 85.5, "max": 91.5 },
+            "PW-CH1-CO2-01": { "min": 800, "max": 2600 },
+            "PW-CH2-CO2-01": { "min": 800, "max": 2800 },
+            "PW-CH1-LUX-01": { "min": 0, "max": 120 },
+            "PW-CH2-LUX-01": { "min": 0, "max": 150 },
+            "PW-CH1-DOOR-01": { "min": 0, "max": 25 },
+            "PW-CH2-DOOR-01": { "min": 0, "max": 25 },
+            "PW-FAC-EM-01": { "min": 45, "max": 95 }
+          },
+          "healthcare_fac": {
+            "HC-ICU-TEMP-01": { "min": 20.5, "max": 23.5 },
+            "HC-ICU-HUM-01": { "min": 42, "max": 58 },
+            "HC-ICU-CO2-01": { "min": 500, "max": 900 },
+            "HC-ICU-LUX-01": { "min": 100, "max": 650 },
+            "HC-ICU-DOOR-01": { "min": 0, "max": 6 },
+            "HC-ICU-FRIDGE-TEMP-01": { "min": 3.0, "max": 7.2 },
+            "HC-FAC-EM-01": { "min": 90, "max": 180 }
+          }
+        }
+      },
+      "violations": {
+        "enabled": false,
+        "mode": "NONE",
+        "rate": 0.0,
+        "types": []
+      },
+      "incident_bundle": { "enabled": false },
+      "fault_injection": {
+        "enabled": false,
+        "unknown_sensor_rate": 0.0,
+        "invalid_metric_rate": 0.0,
+        "bad_unit_rate": 0.0,
+        "bad_json_rate": 0.0
+      }
+    },
+    {
+      "id": "DP2",
+      "name": "ControlledViolations",
+      "intent": "Repeatable, targeted threshold breaches for detector/alerts. Choose types + rate; can target specific tenant/sensors.",
+      "metric_mix_override_percent": {
+        "TEMP": 30,
+        "HUMIDITY": 20,
+        "DOOR": 15,
+        "GAS": 15,
+        "LIGHT": 10,
+        "ENERGY": 10
+      },
+      "value_generation": {
+        "mode": "MIXED_IN_RANGE_AND_OUT_OF_RANGE",
+        "noise_level": 0.12
+      },
+      "violations": {
+        "enabled": true,
+        "mode": "RANDOM_WEIGHTED",
+        "rate": 0.05,
+        "targeting": {
+          "tenant_keys": ["potato_wh", "healthcare_fac"],
+          "prefer_potato_chamber_issues": true,
+          "prefer_healthcare_fridge_issues": true
+        },
+        "types": [
+          {
+            "id": "HIGH_TEMP",
+            "weight": 25,
+            "sensor_codes": [
+              "PW-CH1-TEMP-01",
+              "PW-CH2-TEMP-01",
+              "HC-ICU-TEMP-01",
+              "HC-ICU-FRIDGE-TEMP-01"
+            ],
+            "metric": "temperature",
+            "unit": "C",
+            "out_of_range_strategy": {
+              "side": "HIGH",
+              "min_over_by": 0.5,
+              "max_over_by": 4.0
+            }
+          },
+          {
+            "id": "LOW_HUMIDITY",
+            "weight": 18,
+            "sensor_codes": ["PW-CH1-HUM-01", "PW-CH2-HUM-01", "HC-ICU-HUM-01"],
+            "metric": "humidity",
+            "unit": "%RH",
+            "out_of_range_strategy": {
+              "side": "LOW",
+              "min_under_by": 2.0,
+              "max_under_by": 12.0
+            }
+          },
+          {
+            "id": "HIGH_CO2",
+            "weight": 18,
+            "sensor_codes": ["PW-CH1-CO2-01", "PW-CH2-CO2-01", "HC-ICU-CO2-01"],
+            "metric": "co2_ppm",
+            "unit": "ppm",
+            "out_of_range_strategy": {
+              "side": "HIGH",
+              "min_over_by": 200,
+              "max_over_by": 2500
+            }
+          },
+          {
+            "id": "DOOR_OPEN_TOO_LONG",
+            "weight": 14,
+            "sensor_codes": [
+              "PW-CH1-DOOR-01",
+              "PW-CH2-DOOR-01",
+              "HC-ICU-DOOR-01"
+            ],
+            "metric": "door_open_seconds",
+            "unit": "s",
+            "out_of_range_strategy": {
+              "side": "HIGH",
+              "min_over_by": 10,
+              "max_over_by": 240
+            }
+          },
+          {
+            "id": "HIGH_LUX",
+            "weight": 10,
+            "sensor_codes": ["PW-CH1-LUX-01", "PW-CH2-LUX-01", "HC-ICU-LUX-01"],
+            "metric": "lux",
+            "unit": "lux",
+            "out_of_range_strategy": {
+              "side": "HIGH",
+              "min_over_by": 100,
+              "max_over_by": 1200
+            }
+          },
+          {
+            "id": "POWER_SPIKE",
+            "weight": 15,
+            "sensor_codes": ["PW-FAC-EM-01", "HC-FAC-EM-01"],
+            "metric": "power_kw",
+            "unit": "kW",
+            "out_of_range_strategy": {
+              "side": "HIGH",
+              "min_over_by": 10,
+              "max_over_by": 120
+            }
+          }
+        ]
+      },
+      "incident_bundle": { "enabled": false },
+      "fault_injection": {
+        "enabled": false,
+        "unknown_sensor_rate": 0.0,
+        "invalid_metric_rate": 0.0,
+        "bad_unit_rate": 0.0,
+        "bad_json_rate": 0.0
+      }
+    },
+    {
+      "id": "DP3",
+      "name": "IncidentBundleColdStorage",
+      "intent": "Correlated multi-signal incident: door open -> lux -> temp drift -> CO2 -> energy. Best for 'real incident' realism.",
+      "metric_mix_override_percent": {
+        "TEMP": 30,
+        "HUMIDITY": 15,
+        "DOOR": 20,
+        "GAS": 15,
+        "LIGHT": 10,
+        "ENERGY": 10
+      },
+      "value_generation": {
+        "mode": "CORRELATED_TIME_SERIES",
+        "noise_level": 0.1
+      },
+      "violations": {
+        "enabled": false,
+        "mode": "NONE",
+        "rate": 0.0,
+        "types": []
+      },
+      "incident_bundle": {
+        "enabled": true,
+        "bundle_id": "CS_DOOR_OPEN_INCIDENT",
+        "tenant_key": "potato_wh",
+        "target_chamber": "PW-CH-01",
+        "duration_seconds": 900,
+        "phases": [
+          {
+            "name": "DoorOpen",
+            "seconds": 120,
+            "events": [
+              {
+                "sensor_code": "PW-CH1-DOOR-01",
+                "metric": "door_open_seconds",
+                "unit": "s",
+                "value_range": [90, 220]
+              }
+            ]
+          },
+          {
+            "name": "LightsOn",
+            "seconds": 120,
+            "events": [
+              {
+                "sensor_code": "PW-CH1-LUX-01",
+                "metric": "lux",
+                "unit": "lux",
+                "value_range": [250, 800]
+              }
+            ]
+          },
+          {
+            "name": "TempRising",
+            "seconds": 360,
+            "events": [
+              {
+                "sensor_code": "PW-CH1-TEMP-01",
+                "metric": "temperature",
+                "unit": "C",
+                "value_range": [4.2, 8.5]
+              }
+            ]
+          },
+          {
+            "name": "CO2Rising",
+            "seconds": 240,
+            "events": [
+              {
+                "sensor_code": "PW-CH1-CO2-01",
+                "metric": "co2_ppm",
+                "unit": "ppm",
+                "value_range": [3800, 6500]
+              }
+            ]
+          },
+          {
+            "name": "PowerUp",
+            "seconds": 360,
+            "events": [
+              {
+                "sensor_code": "PW-FAC-EM-01",
+                "metric": "power_kw",
+                "unit": "kW",
+                "value_range": [95, 160]
+              }
+            ]
+          }
+        ],
+        "correlation_id_prefix": "inc-cs-"
+      },
+      "fault_injection": {
+        "enabled": false,
+        "unknown_sensor_rate": 0.0,
+        "invalid_metric_rate": 0.0,
+        "bad_unit_rate": 0.0,
+        "bad_json_rate": 0.0
+      }
+    },
+    {
+      "id": "DP4",
+      "name": "HealthcareCompliance",
+      "intent": "Healthcare realistic values + targeted compliance breaches (ICU and fridge).",
+      "metric_mix_override_percent": {
+        "TEMP": 35,
+        "HUMIDITY": 20,
+        "GAS": 20,
+        "DOOR": 10,
+        "LIGHT": 5,
+        "ENERGY": 10
+      },
+      "value_generation": {
+        "mode": "IN_RANGE_WITH_TARGETED_BREACHES",
+        "noise_level": 0.1
+      },
+      "violations": {
+        "enabled": true,
+        "mode": "TARGETED",
+        "rate": 0.03,
+        "targeting": {
+          "tenant_keys": ["healthcare_fac"],
+          "focus": ["ICU_AIR_QUALITY", "FRIDGE_COLD_CHAIN"]
+        },
+        "types": [
+          {
+            "id": "ICU_HIGH_CO2",
+            "weight": 50,
+            "sensor_codes": ["HC-ICU-CO2-01"],
+            "metric": "co2_ppm",
+            "unit": "ppm",
+            "out_of_range_strategy": {
+              "side": "HIGH",
+              "min_over_by": 100,
+              "max_over_by": 1200
+            }
+          },
+          {
+            "id": "FRIDGE_HIGH_TEMP",
+            "weight": 50,
+            "sensor_codes": ["HC-ICU-FRIDGE-TEMP-01"],
+            "metric": "temperature",
+            "unit": "C",
+            "out_of_range_strategy": {
+              "side": "HIGH",
+              "min_over_by": 0.5,
+              "max_over_by": 6.0
+            }
+          }
+        ]
+      },
+      "incident_bundle": {
+        "enabled": false
+      },
+      "fault_injection": {
+        "enabled": false,
+        "unknown_sensor_rate": 0.0,
+        "invalid_metric_rate": 0.0,
+        "bad_unit_rate": 0.0,
+        "bad_json_rate": 0.0
+      }
+    },
+    {
+      "id": "DP5",
+      "name": "FaultInjectionChaos",
+      "intent": "Pipeline hardening: duplicates, invalid schema, unknown sensors, out-of-order timestamps, payload bloat.",
+      "metric_mix_override_percent": null,
+      "value_generation": {
+        "mode": "LIKE_DP1_BASELINE",
+        "noise_level": 0.15
+      },
+      "violations": {
+        "enabled": false,
+        "mode": "NONE",
+        "rate": 0.0,
+        "types": []
+      },
+      "incident_bundle": { "enabled": false },
+      "fault_injection": {
+        "enabled": true,
+        "unknown_sensor_rate": 0.02,
+        "invalid_metric_rate": 0.02,
+        "bad_unit_rate": 0.01,
+        "bad_json_rate": 0.005,
+        "unknown_sensor_example": "PW-UNKNOWN-999",
+        "invalid_metric_examples": [
+          "temp_celsius",
+          "humidity_pct",
+          "co2",
+          "door_open_time"
+        ],
+        "bad_unit_examples": ["CELSIUS", "percent", "PPM", "seconds"]
+      },
+      "timestamp_policy_override": {
+        "mode": "NOW_WITH_OUT_OF_ORDER",
+        "out_of_order_rate": 0.03,
+        "late_event_rate": 0.02,
+        "max_lateness_seconds": 1800
+      },
+      "payload_policy_override": {
+        "raw_payload_mode": "ON",
+        "raw_payload_size": "LARGE",
+        "tags_enabled": true
+      },
+      "idempotency_policy_override": {
+        "duplicate_event_rate": 0.03
+      }
+    }
+  ],
+  "load_profiles": [
+    {
+      "id": "LP1",
+      "name": "Steady",
+      "intent": "Constant EPS for endurance, stability, DB tuning, and long-run backpressure checks.",
+      "script_suggestion": "steady_traffic.js",
+      "duration_seconds": 1800,
+      "rate_model": {
+        "type": "CONSTANT_EPS",
+        "events_per_second": 40
+      },
+      "vu_model": {
+        "type": "AUTO",
+        "max_vus": 200
+      },
+      "http_behavior": {
+        "timeout_ms": 5000,
+        "retry": { "enabled": false },
+        "keepalive": true
+      },
+      "kafka_like_behavior": {
+        "batching": { "enabled": true, "batch_size": 1, "max_batch_wait_ms": 0 }
+      }
+    },
+    {
+      "id": "LP2",
+      "name": "BusyHour",
+      "intent": "Ramp up -> sustain -> ramp down to mimic peak hour patterns and scaling behavior.",
+      "script_suggestion": "busy_hour_traffic.js",
+      "duration_seconds": 2700,
+      "rate_model": {
+        "type": "RAMP",
+        "stages": [
+          { "duration_seconds": 600, "target_eps": 25 },
+          { "duration_seconds": 900, "target_eps": 80 },
+          { "duration_seconds": 600, "target_eps": 25 },
+          { "duration_seconds": 600, "target_eps": 10 }
+        ]
+      },
+      "vu_model": {
+        "type": "AUTO",
+        "max_vus": 400
+      },
+      "http_behavior": {
+        "timeout_ms": 6000,
+        "retry": { "enabled": false },
+        "keepalive": true
+      },
+      "kafka_like_behavior": {
+        "batching": { "enabled": true, "batch_size": 1, "max_batch_wait_ms": 0 }
+      }
+    },
+    {
+      "id": "LP3",
+      "name": "Burst",
+      "intent": "Short shock bursts to test rate-limits, circuit breakers, Kafka lag, DB saturation, and DLQ spikes.",
+      "script_suggestion": "burst_traffic.js",
+      "duration_seconds": 900,
+      "rate_model": {
+        "type": "BURSTY",
+        "baseline_eps": 15,
+        "burst_multiplier": 10,
+        "burst_duration_seconds": 20,
+        "burst_every_seconds": 120
+      },
+      "vu_model": {
+        "type": "AUTO",
+        "max_vus": 600
+      },
+      "http_behavior": {
+        "timeout_ms": 7000,
+        "retry": { "enabled": false },
+        "keepalive": true
+      },
+      "kafka_like_behavior": {
+        "batching": { "enabled": true, "batch_size": 1, "max_batch_wait_ms": 0 }
+      }
+    }
+  ],
+  "run_matrix_suggested": [
+    {
+      "load_profile": "LP1",
+      "data_profile": "DP1",
+      "label": "BaselineThroughput"
+    },
+    {
+      "load_profile": "LP2",
+      "data_profile": "DP2",
+      "label": "PeakWithViolations"
+    },
+    {
+      "load_profile": "LP1",
+      "data_profile": "DP3",
+      "label": "IncidentNarrative"
+    },
+    {
+      "load_profile": "LP1",
+      "data_profile": "DP4",
+      "label": "HealthcareCompliance"
+    },
+    {
+      "load_profile": "LP3",
+      "data_profile": "DP5",
+      "label": "BurstChaosHardening"
+    }
+  ]
+}

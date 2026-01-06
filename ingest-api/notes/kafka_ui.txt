@@ -1,0 +1,11 @@
+# 1) Start Kafka (KRaft broker)
+docker compose -f docker-compose.kafka.yml up -d
+
+# 2) Start Kafka UI (in a *separate* compose project)
+docker compose -f docker-compose.kafka-ui.yml up -d
+
+
+docker compose -f docker-compose.kafka-ui.yml down
+docker compose -f docker-compose.kafka-ui.yml up -d
+
+UI will be served from http://localhost:9090/

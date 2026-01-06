@@ -1,0 +1,60 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "coldstore/events.notifications.v1.schema.json",
+  "title": "Coldstore Notification Event v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "emitted_at",
+    "tenant_key",
+    "sensor_code",
+    "severity",
+    "throttle_window_seconds",
+    "suppressed_count",
+    "status",
+    "channels",
+    "results"
+  ],
+  "properties": {
+    "emitted_at": { "type": "string", "minLength": 1 },
+    "tenant_key": { "type": "string", "minLength": 1 },
+    "sensor_code": { "type": "string", "minLength": 1 },
+    "severity": { "type": "string", "enum": ["INFO", "WARN", "CRITICAL"] },
+    "violation_type": { "type": ["string", "null"] },
+    "event_id": { "type": ["string", "null"] },
+    "reading_id": { "type": ["string", "number", "null"] },
+    "violation_id": { "type": ["string", "number", "null"] },
+    "detected_at": { "type": ["string", "null"] },
+    "scenario": { "type": ["string", "null"] },
+    "data_profile": { "type": ["string", "null"] },
+    "correlation_id": { "type": ["string", "null"] },
+    "trace_id": { "type": ["string", "null"] },
+    "tags": { "type": ["object", "null"], "additionalProperties": true },
+    "throttle_window_seconds": { "type": "integer" },
+    "suppressed_count": { "type": "integer" },
+    "status": {
+      "type": "string",
+      "enum": ["sent", "suppressed", "skipped", "failed"]
+    },
+    "channels": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["channel", "status"],
+        "properties": {
+          "channel": { "type": "string" },
+          "status": {
+            "type": "string",
+            "enum": ["sent", "suppressed", "skipped", "failed"]
+          },
+          "reason": { "type": "string" }
+        }
+      }
+    }
+  }
+}

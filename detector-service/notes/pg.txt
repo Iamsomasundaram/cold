@@ -1,0 +1,2 @@
+Start Postgres + Schema Registry:
+docker compose -f docker-compose.detector.yml up -d

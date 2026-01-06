@@ -1,0 +1,52 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "coldstore/events.detected.v1.schema.json",
+  "title": "Coldstore Detected Event v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "tenantKey",
+    "eventId",
+    "readingId",
+    "sensorCode",
+    "metric",
+    "value",
+    "unit",
+    "observedAt",
+    "detectedAt",
+    "hasViolation",
+    "severity"
+  ],
+  "properties": {
+    "tenantKey": { "type": ["string", "null"], "minLength": 1 },
+    "eventId": { "type": "string", "minLength": 1 },
+    "readingId": { "type": "integer" },
+    "violationId": { "type": ["integer", "null"] },
+    "sensorCode": { "type": "string", "minLength": 1 },
+    "metric": { "type": "string", "minLength": 1 },
+    "value": { "type": "number" },
+    "unit": { "type": "string", "minLength": 1 },
+    "observedAt": { "type": "integer" },
+    "detectedAt": { "type": "integer" },
+    "hasViolation": { "type": "boolean" },
+    "severity": { "type": "string", "enum": ["INFO", "WARN", "CRITICAL"] },
+    "violationType": { "type": ["string", "null"] },
+    "expectedMin": { "type": ["number", "null"] },
+    "expectedMax": { "type": ["number", "null"] },
+    "location": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "properties": {
+        "siteName": { "type": ["string", "null"] },
+        "zone": { "type": ["string", "null"] },
+        "rack": { "type": ["string", "null"] }
+      }
+    },
+    "ruleVersion": { "type": ["string", "null"] },
+    "scenario": { "type": ["string", "null"] },
+    "dataProfile": { "type": ["string", "null"] },
+    "correlationId": { "type": ["string", "null"] },
+    "traceId": { "type": ["string", "null"] },
+    "tags": { "type": ["object", "null"], "additionalProperties": true }
+  }
+}

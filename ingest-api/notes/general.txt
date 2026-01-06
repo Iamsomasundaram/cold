@@ -1,0 +1,6 @@
+Promtail is here: http://localhost:9080/targets
+Loki is here: http://localhost:3100/ready
+Prometheus is here: http://localhost:9090/query
+Grafana is here: http://localhost:5000/login
+Kakfa Ui is here: http://localhost:9000/
+

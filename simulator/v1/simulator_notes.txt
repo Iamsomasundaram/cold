@@ -1,0 +1,45 @@
+To pull the k6 docker image:
+----------------------------
+docker pull grafana/k6
+
+A sample k6 script (run this from powershell):
+----------------------------------------------
+docker run --rm `
+  -v "D:\\Code\\Projects\\Projects\\playground\\cold\\simulator:/scripts" `
+  -w /scripts `
+  grafana/k6 `
+  run smoke_test.js
+
+
+  docker run --rm `
+  -e BASE_URL="http://host.docker.internal:8080" `
+  -e INGEST_PATH="/api/v1/events" `
+  -e RATE="50" `
+  -e DURATION="1m" `
+  -v "D:\\Code\\Projects\\Projects\\playground\\cold\\simulator:/scripts" `
+  -w /scripts `
+  grafana/k6 `
+  run steady_traffic.js
+
+  docker run --rm `
+  -e BASE_URL="http://host.docker.internal:8080" `
+  -e INGEST_PATH="/api/v1/events" `
+  -e RATE="1" `
+  -e DURATION="10s" `
+  -v "D:\\Code\\Projects\\Projects\\playground\\cold\\simulator:/scripts" `
+  -w /scripts `
+  grafana/k6 `
+  run steady_traffic.js
+
+  docker run --rm `
+  -e BASE_URL="http://host.docker.internal:8080" `
+  -e INGEST_PATH="/api/v1/events" `
+  -e RATE="20" `
+  -e DURATION="30s" `
+  -v "D:\\Code\\Projects\\Projects\\playground\\cold\\simulator:/scripts" `
+  -w /scripts `
+  grafana/k6 `
+  run steady_traffic.js
+
+
+ 

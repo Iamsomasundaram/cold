@@ -1,0 +1,39 @@
+Run Kakfa and Kakfa UI containers: 
+Run the docker compose files
+
+To use kafka as a queue:
+$env:QUEUE_BACKEND="kafka"
+$env:KAFKA_BROKERS="localhost:9092"
+$env:KAFKA_CLIENT_ID="ingest-api"
+$env:KAFKA_TOPIC_EVENTS="events.ingest.v1"
+
+To use Kakfa ui:
+http://localhost:9090/
+
+To start the backend:
+npm run dev
+
+To use our mini-observability:
+$env:NODE_ENV = "production";npm run dev *> ..\logs\ingest-api.log
+
+If you want to see logs on console AND in file:
+npm run dev | Tee-Object ..\logs\ingest-api.log
+
+To setup Loki and Prometheus on Grafana:
+    Use the in-network service names instead (as Grafana runs on container):
+    Prometheus URL: http://prometheus:9090
+    Loki URL: http://loki:3100
+
+The above command will start the Express backend on:
+ http://localhost:8080/
+
+Virtual sensor payload:
+ docker run --rm `
+  -e BASE_URL="http://host.docker.internal:8080" `
+  -e INGEST_PATH="/api/v1/events" `
+  -e RATE="1" `
+  -e DURATION="10s" `
+  -v "D:\\Code\\Projects\\Projects\\playground\\cold\\simulator:/scripts" `
+  -w /scripts `
+  grafana/k6 `
+  run steady_traffic.js

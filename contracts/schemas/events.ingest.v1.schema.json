@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "coldstore/events.ingest.v1.schema.json",
+  "title": "Coldstore Ingest Event v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "tenant_key",
+    "event_id",
+    "sensor_code",
+    "metric",
+    "value",
+    "unit",
+    "observed_at",
+    "scenario",
+    "data_profile"
+  ],
+  "properties": {
+    "tenant_key": { "type": "string", "minLength": 1 },
+    "event_id": { "type": "string", "minLength": 1 },
+    "sensor_code": { "type": "string", "minLength": 1 },
+    "metric": { "type": "string", "minLength": 1 },
+    "value": { "type": "number" },
+    "unit": { "type": "string", "minLength": 1 },
+    "observed_at": { "type": "string", "minLength": 1 },
+    "scenario": { "type": "string", "minLength": 1 },
+    "data_profile": { "type": "string", "minLength": 1 },
+    "correlation_id": { "type": "string" },
+    "trace_id": { "type": "string" },
+    "tags": { "type": "object", "additionalProperties": true },
+    "raw_payload": { "type": "object", "additionalProperties": true }
+  }
+}

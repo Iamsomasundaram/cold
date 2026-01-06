@@ -1,0 +1,9 @@
+# (Optional) clean up any old containers with same name
+docker compose -f docker-compose.kafka.yml down -v
+
+# Start Kafka (KRaft, no ZooKeeper)
+docker compose -f docker-compose.kafka.yml up -d
+
+# Check it’s healthy
+docker ps
+docker logs kafka | tail

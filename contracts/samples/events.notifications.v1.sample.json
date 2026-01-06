@@ -1,0 +1,28 @@
+{
+  "emitted_at": "2026-01-06T10:00:05Z",
+  "tenant_key": "potato_wh",
+  "sensor_code": "PW-CH1-TEMP-01",
+  "severity": "WARN",
+  "violation_type": "ABOVE_MAX",
+  "event_id": "evt-0001",
+  "reading_id": "12345",
+  "violation_id": "6789",
+  "detected_at": "2026-01-06T10:00:01Z",
+  "scenario": "LP2",
+  "data_profile": "DP2",
+  "correlation_id": "run-001",
+  "trace_id": "trace-abc",
+  "tags": {
+    "run_label": "smoke_lp2_dp2"
+  },
+  "throttle_window_seconds": 300,
+  "suppressed_count": 0,
+  "status": "sent",
+  "channels": ["slack"],
+  "results": [
+    {
+      "channel": "slack",
+      "status": "sent"
+    }
+  ]
+}
