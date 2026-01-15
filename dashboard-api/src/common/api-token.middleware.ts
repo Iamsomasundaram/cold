@@ -1,4 +1,4 @@
-import { Injectable, NestMiddleware } from "@nestjs/common";
+﻿import { Injectable, NestMiddleware } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { NextFunction, Request, Response } from "express";
 
@@ -8,6 +8,15 @@ export class ApiTokenMiddleware implements NestMiddleware {
 
   use(req: Request, res: Response, next: NextFunction) {
     if (req.method === "OPTIONS") {
+      next();
+      return;
+    }
+
+    // TODO: Re-enable API auth once FE uses token flow reliably.
+    const authEnabled =
+      String(this.config.get("API_AUTH_ENABLED", "false")).toLowerCase() ===
+      "true";
+    if (!authEnabled) {
       next();
       return;
     }
@@ -32,3 +41,4 @@ export class ApiTokenMiddleware implements NestMiddleware {
     next();
   }
 }
+
