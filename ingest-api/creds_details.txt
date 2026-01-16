@@ -1,0 +1,18 @@
+Here’s where the GenAI key and Slack webhook live or are wired in.
+
+Likely Actual Values (Local .env)
+
+ingest-api/.env (Slack webhook + GenAI key if set)
+genai-service/.env (GenAI key if set)
+Wiring / Placeholders
+
+docker-compose.kafka.yml (passes OPENAI_API_KEY/SLACK_WEBHOOK_URL via env)
+.env.example (placeholders)
+.env.example (placeholders)
+config.py (reads OPENAI_API_KEY)
+llm_client.py (uses OPENAI_API_KEY)
+slack.notifier.ts (reads SLACK_WEBHOOK_URL)
+Docs
+
+README.md
+general.txt
